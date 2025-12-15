@@ -1,212 +1,147 @@
-#Moving Average Crossover with ML Risk Control & Volatility Targeting
-Overview
-This project explores a classic moving average crossover strategy on SPY and progressively extends it with machine learning–based risk control and volatility targeting.
-The goal was not to build a high-return or production-ready trading system, but to understand:
-Where simple trend-following strategies fail
+Moving Average Crossover with ML Risk Control & Volatility Targeting
 
+Overview:
 
-How machine learning can (and cannot) add value
+This project explores a simple moving average crossover strategy on SPY and gradually extends it to study how machine learning and risk management techniques affect performance.
 
+The goal of the project was not to build a profitable trading system, but to better understand:
 
-How professional risk management techniques improve robustness
+   - Where basic trend-following strategies break down
 
+   - How machine learning can be applied in a realistic way
 
-The final result is a risk-controlled trend-following strategy with significantly reduced drawdowns and improved risk-adjusted performance.
+   - Why risk management often matters more than signal quality
 
-1. Baseline Strategy: Moving Average Crossover
-The project began with a simple, well-known strategy:
-Compute a fast and slow moving average of price
+The final strategy focuses on reducing risk and drawdowns rather than maximizing returns.
 
+First Strategy: Moving Average Crossover
 
-Go long when the fast MA is above the slow MA
+The project started with a standard moving average crossover strategy:
 
+   - A fast and a slow moving average are calculated on price
 
-Stay out of the market otherwise
+   - The strategy goes long when the fast MA is above the slow MA
 
+   - It stays out of the market otherwise
 
-Signals are shifted forward by one day to avoid lookahead bias
+   - Signals are shifted forward by one day to avoid lookahead bias
 
+This type of strategy is commonly used as a basic trend-following example.
 
-This type of strategy is widely studied and serves as a baseline trend-following signal, not an alpha-generating model.
-Key Observations
-The strategy captures long-term trends reasonably well
+Observations:
 
+   - The strategy captures long-term market trends reasonably well
 
-It suffers from large drawdowns during market crashes
+   - It experiences large drawdowns during market crashes
 
+   - Performance varies significantly depending on market conditions
 
-Performance is highly dependent on market regime (trending vs choppy)
+This reinforced a common idea in quantitative finance: Trend-following can work, but risk management is critical.
 
+Initial ML Approach: Regime Classification
 
-This confirmed a common result in quantitative finance:
-trend-following works, but risk management dominates outcomes.
+The next step was to test whether machine learning could help identify market regimes where trend-following performs better.
 
-2. First ML Attempt: Regime Classification (What Didn’t Work)
-The next step was to explore whether machine learning could identify favorable market regimes.
-Approach
-Engineered market state features (MA slopes, MA distance, volatility)
+Approach:
 
+   - Created features such as moving average slopes, MA distance, and rolling volatility
 
-Trained a Random Forest classifier to label periods as:
+   - Trained a Random Forest classifier to label periods as favorable or unfavorable
 
+   - Used the model as a binary filter to allow or block trades
 
-“Good for trend-following”
+Outcome:
 
+This approach did not work well in practice. The model tended to block trading too often, which resulted in:
 
-“Bad for trend-following”
+   - Missed profitable trends
 
+   - Long periods of flat performance
 
-Used ML as a binary gate:
+   - Worse overall results
 
+This showed that using ML as a strict “trade or don’t trade” decision tool can be ineffective.
 
-Only trade when ML predicted a favorable regime
+Using ML for Risk Control Instead of Prediction
 
+Instead of discarding ML entirely, I changed what it was doing.
 
-Result
-This approach consistently reduced exposure too aggressively, leading to:
-Missed upside
+Rather than asking whether the strategy should trade, the model was used to estimate how risky the current market environment appears.
 
+   - The model outputs probabilities instead of hard decisions
 
-Flat equity curves
+   - These probabilities are treated as a confidence or risk measure
 
+   - Exposure is reduced during higher-risk regimes rather than eliminated
 
-Lower overall performance
+This allowed ML to act as a risk overlay instead of a signal generator.
 
+Volatility Targeting
 
-Key Insight
-Using ML as a hard decision-maker (“trade / don’t trade”) is often counterproductive in financial markets.
-This mirrors findings in academic and professional research:
-ML is rarely effective as a strict timing tool, especially for short-horizon predictions.
+Volatility targeting was added to further stabilize the strategy.
 
-3. Reframing ML: From Prediction to Risk Control
-Rather than abandoning ML, the role of ML was redefined.
-New Perspective
-Instead of asking:
-“Should I trade?”
-The ML model was used to ask:
-“How risky does the current environment appear?”
-Implementation
-The Random Forest outputs probabilities, not binary predictions
+   - Rolling volatility is estimated using recent returns
 
+   - Position size is scaled to target a consistent level of risk
 
-These probabilities are interpreted as regime confidence
+   - Leverage is capped to keep the strategy realistic
 
+This approach is commonly used in systematic trading to maintain stable risk over time.
 
-ML does not decide direction
+Final Strategy Structure
 
+The final process is:
 
-ML only reduces exposure during high-risk regimes
-
-
-This transformed ML into a risk overlay, not a signal generator.
-
-4. Volatility Targeting
-To further stabilize the strategy, volatility targeting was introduced.
-Motivation
-Even with better regime handling, fixed position sizing leads to:
-Excessive risk during volatile periods
-
-
-Underutilization of capital during calm periods
-
-
-Method
-Estimate rolling realized volatility
-
-
-Scale exposure so that portfolio volatility targets a fixed annual level
-
-
-Cap leverage to avoid unrealistic position sizes
-
-
-This step normalizes risk over time and is widely used in:
-Trend-following funds
-
-
-Risk parity portfolios
-
-
-CTA strategies
-
-
-
-5. Final Strategy Architecture
-The final pipeline is:
 Price Data
    ↓
-Moving Average Signal (Direction)
+Moving Average Signal
    ↓
-ML-Based Risk Overlay (Exposure Reduction)
+ML-Based Risk Adjustment
    ↓
-Volatility Targeting (Position Scaling)
+Volatility Targeting
    ↓
 Backtest with Transaction Costs
 
-Each component has a clear, limited role:
-Moving averages provide directional bias
+Each component has a specific role:
 
+   - Moving averages determine direction
 
-ML controls downside risk
+   - ML adjusts risk exposure
 
+   - Volatility targeting controls overall risk
 
-Volatility targeting stabilizes returns
+Results and Takeaways
 
+   - The final strategy produces lower returns than buy-and-hold
 
+   - Volatility and drawdowns are significantly reduced
 
-6. Results & Takeaways
-Key Outcomes
-Raw returns were lower than buy-and-hold
+   - Risk-adjusted performance improves compared to the baseline
 
+   - Large losses during market stress are avoided
 
-Volatility and drawdowns were dramatically reduced
+Key Lessons
 
+   - Simple strategies often fail due to poor risk control
 
-Risk-adjusted performance (Sharpe ratio) improved significantly
+   - ML is more effective as a risk management tool than a predictor
 
+   - Improving robustness can be more important than increasing returns
 
-Maximum drawdowns were reduced to single-digit percentages
+Limitations and Future Work
 
+This project has several limitations:
 
-Main Lessons
-Simple strategies fail primarily due to poor risk management
+   - Only one asset (SPY) is tested
 
+   - Daily data is used
 
-ML is more effective as a risk control tool than a predictor
+   - No macroeconomic or cross-asset features are included
+     
+Possible next steps include:
 
+   - Testing on additional assets
 
-Robustness and interpretability matter more than optimization
+   - Walk-forward retraining of the ML model
 
-
-Accepting lower returns in exchange for stability is often rational
-
-
-
-7. Limitations & Future Work
-This project intentionally avoids overfitting and complexity. Known limitations include:
-Single asset (SPY)
-
-
-Daily data only
-
-
-No macroeconomic features
-
-
-No walk-forward retraining
-
-
-Possible extensions:
-Apply to multiple assets
-
-
-Walk-forward ML retraining
-
-
-Portfolio-level risk allocation
-
-
-Comparative analysis across MA parameter ranges
-
-
-
+   - Portfolio-level analysis
