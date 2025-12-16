@@ -1,6 +1,6 @@
-Moving Average Crossover with ML Risk Control & Volatility Targeting
+# Moving Average Crossover with ML Risk Control & Volatility Targeting
 
-Overview:
+## Overview
 
 This project explores a simple moving average crossover strategy on SPY and gradually extends it to study how machine learning and risk management techniques affect performance.
 
@@ -14,7 +14,26 @@ The goal of the project was not to build a profitable trading system, but to bet
 
 The final strategy focuses on reducing risk and drawdowns rather than maximizing returns.
 
-First Strategy: Moving Average Crossover
+## How to run:
+
+- Create a virtual environment:
+  
+      python3 -m venv venv
+  
+      source venv/bin/activate
+  
+- Install dependencies:
+  
+      pip install -r requirements.txt
+  
+- Provide your own SPY.parquet data in the data folder
+  
+- Run
+  
+      python main.py
+
+
+## First Strategy: Moving Average Crossover
 
 The project started with a standard moving average crossover strategy:
 
@@ -38,7 +57,7 @@ Observations:
 
 This reinforced a common idea in quantitative finance: Trend-following can work, but risk management is critical.
 
-Initial ML Approach: Regime Classification
+## Initial ML Approach: Regime Classification
 
 The next step was to test whether machine learning could help identify market regimes where trend-following performs better.
 
@@ -62,7 +81,7 @@ This approach did not work well in practice. The model tended to block trading t
 
 This showed that using ML as a strict “trade or don’t trade” decision tool can be ineffective.
 
-Using ML for Risk Control Instead of Prediction
+## Using ML for Risk Control Instead of Prediction
 
 Instead of discarding ML entirely, I changed what it was doing.
 
@@ -76,7 +95,7 @@ Rather than asking whether the strategy should trade, the model was used to esti
 
 This allowed ML to act as a risk overlay instead of a signal generator.
 
-Volatility Targeting
+## Volatility Targeting
 
 Volatility targeting was added to further stabilize the strategy.
 
@@ -88,7 +107,7 @@ Volatility targeting was added to further stabilize the strategy.
 
 This approach is commonly used in systematic trading to maintain stable risk over time.
 
-Final Strategy Structure
+## Final Strategy Structure
 
 The final process is:
 
@@ -110,7 +129,7 @@ Each component has a specific role:
 
    - Volatility targeting controls overall risk
 
-Results and Takeaways
+## Results and Takeaways
 
    - The final strategy produces lower returns than buy-and-hold
 
@@ -128,7 +147,7 @@ Key Lessons
 
    - Improving robustness can be more important than increasing returns
 
-Limitations and Future Work
+## Limitations and Future Work
 
 This project has several limitations:
 
